@@ -1,0 +1,33 @@
+1 2
+wasp
+3 5
+www
+1 34
+wewe
+-2000 -1000
+sddd
+-1000 -2333
+surround
+-9999 -9999
+weee
+-9998 -9999
+werrr
+-9999 -9990
+rrrrr
+-9999 -9992
+eeeeee
+-9292 -9433
+wewewe
+-9213 -9534
+werrtrrr
+-902 -323
+wwww
+1029 323 
+wersi
+1029  444
+www
+1111 1111
+tree
+6000 6666
+msi
+
