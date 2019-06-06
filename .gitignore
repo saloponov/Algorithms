@@ -51,9 +51,12 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# Visual studio gitignore
+# Visual Studio Code gitignore
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Visual Studio
+.vs/*
