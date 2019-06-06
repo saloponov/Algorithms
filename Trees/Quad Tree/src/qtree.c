@@ -21,104 +21,127 @@ Tree *CreateParent(Tree *rt,Info *t)//функция создающая необ
 {
 	if(rt->root!=NULL)
 	{
-		Node *new,*cur=rt->root;// указатели на новый и текущий элементы
-		int i,xabs=abs(cur->xmax-cur->xmin),yabs=abs(cur->ymax-cur->ymin);//длина границ
-		cur->p=(Node*)calloc(1,sizeof(Node));//новый родительский элемент
-		new=cur->p;//
-		new->occupancy=0;
-		new->p=NULL;
-		for(i=0;i<4;++i)
+		Node *new;
+		Node *cur = rt->root;// указатели на новый и текущий элементы
+		
+		int i; 
+		int xabs = abs(cur->xmax - cur->xmin),
+			yabs = abs(cur->ymax - cur->ymin);//длина границ
+		
+		cur->p = (Node*)calloc(1, sizeof(Node));//новый родительский элемент
+		
+		new = cur->p;
+		new->occupancy = 0;
+		new->p = NULL;
+
+		for(i = 0; i < 4; ++i)
 		{
-			new->branch[i]=NULL;
-			new->depth[i]=0;
+			new->branch[i] = NULL;
+			new->depth[i] = 0;
 		}
-		for(i=0;i<N;++i)
-			new->info[i]=NULL;
-		rt->root=new;//корнем становится новый элемент
+
+		for(i = 0; i < N; ++i)
+			new->info[i] = NULL;
+			
+		rt->root = new;//корнем становится новый элемент
+		
 		/*проверяем в какой области лежит добавляемый элемент, присоединяем существующее дерево к нужному листу new и задаются нужные границы у эл-та new*/
 		/***********************************************/
-		if(PointBelongsToSquare(cur->xmax+xabs,cur->xmin,cur->ymax+yabs,cur->ymin,t->x,t->y)) //проверка в какой области лежит новая точка
+		if(PointBelongsToSquare(cur->xmax + xabs, cur->xmin, cur->ymax + yabs, cur->ymin, t->x, t->y)) //проверка в какой области лежит новая точка
 		{
-			Expansion(cur,new,0,cur->xmax+xabs,cur->xmin,cur->ymax+yabs,cur->ymin);//задаёт необходимые параметры новому узлу дерева
+			Expansion(cur, new, 0, cur->xmax + xabs, cur->xmin, cur->ymax + yabs, cur->ymin);//задаёт необходимые параметры новому узлу дерева
 			//		|		|	vert = y
 			//		| 0|	|	hor = x
 			return rt;
-		}else if (PointBelongsToSquare(cur->xmax+xabs,cur->xmin,cur->ymax,cur->ymin-yabs,t->x,t->y)) //проверка в какой области лежит новая точка
+		}else if (PointBelongsToSquare(cur->xmax + xabs, cur->xmin, cur->ymax, cur->ymin - yabs, t->x, t->y)) //проверка в какой области лежит новая точка
 		{
-		//|  1| 	|
-		//|			|
-			Expansion(cur,new,1,cur->xmax+xabs,cur->xmin,cur->ymax,cur->ymin-yabs);//задаёт необходимые параметры новому узлу дерева
+			//|  1| 	|
+			//|			|
+			Expansion(cur, new, 1, cur->xmax + xabs, cur->xmin, cur->ymax, cur->ymin - yabs);//задаёт необходимые параметры новому узлу дерева
 			return rt;
-		}else if(PointBelongsToSquare(cur->xmax,cur->xmin-xabs,cur->ymax+yabs,cur->ymin,t->x,t->y))//проверка в какой области лежит новая точка
+		}else if(PointBelongsToSquare(cur->xmax, cur->xmin - xabs, cur->ymax + yabs, cur->ymin, t->x, t->y))//проверка в какой области лежит новая точка
 		{
-		//	|		|
-		//	|	|2	|
-			Expansion(cur,new,2,cur->xmax,cur->xmin-xabs,cur->ymax+yabs,cur->ymin);//задаёт необходимые параметры новому узлу дерева
+			//	|		|
+			//	|	|2	|
+			Expansion(cur, new, 2, cur->xmax, cur->xmin - xabs, cur->ymax + yabs, cur->ymin);//задаёт необходимые параметры новому узлу дерева
 			return rt;
-		}else if(PointBelongsToSquare(cur->xmax,cur->xmin-xabs,cur->ymin,cur->ymin-yabs,t->x,t->y))//проверка в какой области лежит новая точка
+		}else if(PointBelongsToSquare(cur->xmax, cur->xmin - xabs, cur->ymin, cur->ymin - yabs, t->x, t->y))//проверка в какой области лежит новая точка
 		{
-		//	|	|4	|
-		//	|		|
-			Expansion(cur,new,3,cur->xmax,cur->xmin-xabs,cur->ymax,cur->ymin-yabs);//задаёт необходимые параметры новому узлу дерева
+			//	|	|4	|
+			//	|		|
+			Expansion(cur, new, 3, cur->xmax, cur->xmin - xabs,cur->ymax, cur->ymin - yabs);//задаёт необходимые параметры новому узлу дерева
 			return rt;
+		
+		}
+
 		/**************************************************/
-		/* если пространства недостаточно расширятся дальше*/
-		}else if ((t->x>cur->xmin)&&(t->y>cur->ymin))
+		/* если пространства недостаточно расширятся дальше*/ 
+		else if ((t->x > cur->xmin) && (t->y > cur->ymin))
 		{
-			Expansion(cur,new,0,cur->xmax+xabs,cur->xmin,cur->ymax+yabs,cur->ymin);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
-			rt=CreateParent(rt,t);//расширяем дальше начиная с нового корня
-			return rt;																	//		|		|	vertical = y
-																						//		| 0|	|	horisontal = x
-		}else if ((t->x>cur->xmin)&&(t->y<cur->ymin)){
-			Expansion(cur,new,1,cur->xmax+xabs,cur->xmin,cur->ymax,cur->ymin-yabs);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
-			rt=CreateParent(rt,t);//расширяем дальше начиная с нового корня
+			Expansion(cur, new, 0, cur->xmax + xabs, cur->xmin, cur->ymax + yabs, cur->ymin);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
+			rt = CreateParent(rt, t);//расширяем дальше начиная с нового корня
+			return rt;																	
+			//		|		|	vertical = y
+			//		| 0|	|	horisontal = x
+		}else if ((t->x > cur->xmin) && (t->y < cur->ymin))
+		{
+			Expansion(cur, new, 1, cur->xmax + xabs, cur->xmin, cur->ymax, cur->ymin - yabs);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
+			rt = CreateParent(rt, t);//расширяем дальше начиная с нового корня
 			return rt;
-		}else if((t->x<cur->xmin)&&(t->y>cur->ymin)){
-			Expansion(cur,new,2,cur->xmax,cur->xmin-xabs,cur->ymax+yabs,cur->ymin);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
-			rt=CreateParent(rt,t);//расширяем дальше начиная с нового корня
+		}else if((t->x < cur->xmin) && (t->y > cur->ymin))
+		{
+			Expansion(cur, new, 2, cur->xmax, cur->xmin-xabs, cur->ymax + yabs, cur->ymin);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
+			rt = CreateParent(rt, t);//расширяем дальше начиная с нового корня
 			return rt;
-		}else if ((t->x<cur->xmin)&&(t->y<cur->ymin)){
-			Expansion(cur,new,3,cur->xmax,cur->xmin-xabs,cur->ymax,cur->ymin-yabs);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
-			rt=CreateParent(rt,t);//расширяем дальше начиная с нового корня
+		}else if ((t->x < cur->xmin) && (t->y < cur->ymin))
+		{
+			Expansion(cur, new, 3, cur->xmax, cur->xmin - xabs, cur->ymax, cur->ymin - yabs);//задаёт необходимые параметры новому узлу дерева и переносит с самого низа в новый узел всю информацию
+			rt = CreateParent(rt, t);//расширяем дальше начиная с нового корня
 		}
 	}
+
 	return rt;
 }
 
-int Expansion(Node * cur, Node *new, int branch,int xmax,int xmin,int ymax,int ymin)//задаёт необходимые параметры новому корню
+int Expansion(Node * cur, Node *new, int branch, int xmax, int xmin, int ymax, int ymin)//задаёт необходимые параметры новому корню
 {
-	int i=0,j=0,occupancy;
+	int i = 0,j = 0,occupancy;
 	Node *res,*dee;
+
 	/*модификация границ*/
-	new->xmax=xmax;
-	new->xmin=xmin;
-	new->xmid=((float)(xmax+xmin))/2;
-	new->ymax=ymax;
-	new->ymin=ymin;
-	new->ymid=((float)(ymax+ymin))/2;
+	new->xmax = xmax;
+	new->xmin = xmin;
+	new->xmid = ((float)(xmax+xmin))/2;
+	new->ymax = ymax;
+	new->ymin = ymin;
+	new->ymid = ((float)(ymax+ymin))/2;
+	
 	/*создание новых потомков и присваивание в нужный(branch) квадрат старого корня*/
 	createNewChildren(new);
 	free(new->branch[branch]);
-	new->branch[branch]=cur;
+	new->branch[branch] = cur;
+	
 	/*заполнение нового элемента путём подъёма из листьев информации*/
 	//DeepestElement(cur,0,&dee,&i);
-	while(new->occupancy<N)
+	
+	while(new->occupancy < N)
 	{
-		res=dee=cur;//dee - искомый элемент, res- промежуточный
-		while(res!=NULL&&res->occupancy>0)//поиск самого нижнего элемента
+		res = dee = cur;//dee - искомый элемент, res- промежуточный
+		while(res != NULL && res->occupancy > 0)//поиск самого нижнего элемента
 		{
-			res=WhereMaxDepth(dee);
-			if(res!=NULL&&res->occupancy>0)
-				dee=res;
+			res = WhereMaxDepth(dee);
+			if(res != NULL && res->occupancy > 0)
+				dee = res;
 		}
-		occupancy=new->occupancy;//заполненность найденного элемента
-		for(i=dee->occupancy-1,j=occupancy;i>=new->occupancy&&dee!=NULL;--i,++j)//перенос всех элементов
+		occupancy = new->occupancy;//заполненность найденного элемента
+		for(i = dee->occupancy - 1, j = occupancy; i >= new->occupancy && dee != NULL; --i, ++j)//перенос всех элементов
 		{
-			new->info[j]=dee->info[i];
-			dee->info[i]=NULL;
+			new->info[j] = dee->info[i];
+			dee->info[i] = NULL;
 			++new->occupancy;
 			--dee->occupancy;
 		}
+
 		if(dee!=NULL)
 		{
 			DelEmptyLeaves(dee->p);//проверяем возможно ли удаление и удаляем их при жтом меняя высоту
@@ -129,31 +152,36 @@ int Expansion(Node * cur, Node *new, int branch,int xmax,int xmin,int ymax,int y
 
 int max(int *d)//поиск максимального в массиве из 4x элементов
 {
-	int i=0,c;
-	for(i=0,c=d[i];i<4;++i)
+	if (d != null)
+		return -INT_MIN;
+
+	for(int i = 0,int c = d[i]; i < 4; ++i)
 	{
-		if(c<d[i])
-			c=d[i];
+		if(c < d[i])
+			c = d[i];
 	}
+
 	return c;
 }
 
-int PointBelongsToSquare(int xmax,int xmin,int ymax,int ymin,int xpnt,int ypnt)//проверка принадлежности точки xpnt ypnt площади заключённой в точках xmax ymax xmin ymin
+int PointBelongsToSquare(int xmax, int xmin, int ymax, int ymin, int xpnt, int ypnt)//проверка принадлежности точки xpnt ypnt площади заключённой в точках xmax ymax xmin ymin
 {
 	int i;
-	if(xmax<xmin)//проверка на правильность исходных данных
+	
+	if(xmax < xmin)//проверка на правильность исходных данных
 	{
-		i=xmin;
-		xmin=xmax;
-		xmax=i;
+		i = xmin;
+		xmin = xmax;
+		xmax = i;
 	}
-	if(ymax<ymin)//проверка на правильность исходных данных
+
+	if(ymax < ymin)//проверка на правильность исходных данных
 	{
-		i=ymin;
-		ymin=ymax;
-		ymax=i;
+		i = ymin;
+		ymin = ymax;
+		ymax = i;
 	}
-	if((xpnt<=xmax)&&(xpnt>=xmin)&&(ypnt<=ymax)&&(ypnt>=ymin))//сравнение и результат
+	if((xpnt <= xmax) && (xpnt >= xmin) && (ypnt <= ymax) && (ypnt >= ymin))//сравнение и результат
 		return 1;//yes
 	else
 		return 0;//no
@@ -165,40 +193,46 @@ int AddNode(Tree *rt,Info *t)//Добавление информации t в q-
 	Node *cur,*f,*leaf;
 	Info *buf;
 	int i;//BranchCh;
-	if(rt->root==NULL)//if root is NULL
+
+	if(rt->root == NULL)//if root is NULL
 	{
-		cur=(Node*)calloc(1,sizeof(Node));//create new root
+		cur = (Node*)calloc(1, sizeof(Node));//create new root
+		
 		/*root's boorders (defined in qtree.h)*/
-		cur->xmax=StartXMAX;
-		cur->xmin=StartXMIN;
-		cur->ymin=StartYMIN;
-		cur->ymax=StartYMAX;
+		cur->xmax = StartXMAX;
+		cur->xmin = StartXMIN;
+		cur->ymin = StartYMIN;
+		cur->ymax = StartYMAX;
+
 		/*midles*/
-		cur->xmid=((float)cur->xmax+(float)cur->xmin)/2;
-		cur->ymid=((float)cur->ymax+(float)cur->ymin)/2;
-		rt->root=cur;
+		cur->xmid = ((float)cur->xmax + (float)cur->xmin) / 2;
+		cur->ymid = ((float)cur->ymax + (float)cur->ymin) / 2;
+		rt->root = cur;
 	}
-	if((rt)&&(rt->root)&&(((t->x)>(rt->root->xmax))||((t->x)<(rt->root->xmin))||((t->y)<(rt->root->ymin))||((t->y)>(rt->root->ymax))))//point don't belong to current square
+	if(rt && rt->root && (t->x > rt->root->xmax || t->x < rt->root->xmin || t->y < rt->root->ymin || t->y > rt->root->ymax))//point don't belong to current square
 	{
-		rt=CreateParent(rt,t);//create new root
-		cur=rt->root;// contin adding
+		rt = CreateParent(rt, t);//create new root
+		cur = rt->root;// contin adding
 	}
-	if((f=Find(rt->root,t,&leaf))==NULL)//no elements with dublicate keys in table
+
+	if((f = Find(rt->root, t, &leaf)) == NULL)//no elements with dublicate keys in table
 	{
-		cur=leaf;
-		while(cur->occupancy>=N)//cur is full
+		cur = leaf;
+		while(cur->occupancy >= N)//cur is full
 		{
-			if ((!cur->branch[0])&&(!cur->branch[1])&&(!cur->branch[2])&&(!cur->branch[3]))//cur is leaf
+			if (!cur->branch[0] && !cur->branch[1] && !cur->branch[2] && !cur->branch[3])//cur is leaf
 			{
 				createNewChildren(cur);//create new child
 			}
-			cur=ChooseBranch(cur,t);//choose branch
+			cur = ChooseBranch(cur, t);//choose branch
 		}
-		if((cur->occupancy)<N)//cur isn't full   inserted following the procedure
+		if( cur->occupancy < N)//cur isn't full   inserted following the procedure
 		{
-			cur->info[cur->occupancy]=t;
-			if(cur->occupancy==0)//t has added in empty Node
-								DepthMod(cur);//change value depth(Глубины)
+			cur->info[cur->occupancy] = t;
+			
+			if(cur->occupancy == 0)//t has added in empty Node
+				DepthMod(cur);//change value depth(Глубины)
+			
 			/**/
 			/*добавляем в пустой элемент или добавляемый элемент больше всех остальных , то добавляем в конец..... P.S добавление в узел в упорядоченном виде*/
 			/*if((cur->occupancy==0)||((t->x)>(cur->info[cur->occupancy-1]->x))||(((t->x)==(cur->info[cur->occupancy-1]->x))&&((t->y)>(cur->info[cur->occupancy-1]->y))))
@@ -238,21 +272,22 @@ int AddNode(Tree *rt,Info *t)//Добавление информации t в q-
 			++(cur->occupancy);//occupancy +1
 		}
 	}else
-			return 2;// Element add early!!!
+		return 2;// Element add early!!!
+	
 	return 0;
 }
 
 Node *ChooseBranch(Node *x,Info *t)//выбор ветки в которую необходимо направляться
 {
-	if(((float)(t->x))<=(x->xmid))
+	if((float)t->x <= x->xmid)
 	{
-		if(((float)(t->y))<=(x->ymid))
+		if((float)t->y <= x->ymid)
 			return x->branch[0];
 		else
 			return x->branch[1];
 	}else
 	{
-		if (((float)(t->y))<(x->ymid))
+		if ((float)t->y < x->ymid)
 			return x->branch[2];
 		else
 			return x->branch[3];
@@ -262,48 +297,67 @@ Node *ChooseBranch(Node *x,Info *t)//выбор ветки в которую н�
 
 int createNewChildren(Node *cur)// создаёт 4 потомка у элемента cur
 {
-	Node *new=cur->branch[0]=(Node*)calloc(1,sizeof(Node));//выделяем чистую память
+	Node *new = cur->branch[0] = (Node*)calloc(1, sizeof(Node));//выделяем чистую память
+	
 	if(!new)
 		perror("Calloc error!(createNewChildren)");
+	
 	/*присваивание границ*/
-	new->ymax=cur->ymid;
-	new->ymin=cur->ymin;
-	new->xmax=cur->xmid;
-	new->xmin=cur->xmin;
-	new->p=cur;//задаём указатель на родительский
-	new->xmid=((float)new->xmax+(float)new->xmin)/2;//вычисление границ
-	new->ymid=((float)new->ymax+(float)new->ymin)/2;//вычисление границ
+	new->ymax = cur->ymid;
+	new->ymin = cur->ymin;
+	new->xmax = cur->xmid;
+	new->xmin = cur->xmin;
+	
+	new->p = cur;//задаём указатель на родительский
+	
+	new->xmid = ((float)new->xmax + (float)new->xmin) / 2;//вычисление границ
+	new->ymid = ((float)new->ymax + (float)new->ymin) / 2;//вычисление границ
+
 	/* те же самые операции для всех остальных потомков , учитывая границы*/
-	new=cur->branch[1]=(Node*)calloc(1,sizeof(Node));
+	new = cur->branch[1] = (Node*)calloc(1, sizeof(Node));
+	
 	if(!new)
 		perror("Calloc error!(createNewChildren)");
-	new->ymax=cur->ymax;
-	new->ymin=(int)cur->ymid;
-	new->xmax=cur->branch[0]->xmax;
-	new->xmin=cur->branch[0]->xmin;
-	new->p=cur;
-	new->xmid=((float)cur->branch[1]->xmax+(float)cur->branch[1]->xmin)/2;
-	new->ymid=((float)cur->branch[1]->ymax+(float)cur->branch[1]->ymin)/2;
-	new=cur->branch[2]=(Node*)calloc(1,sizeof(Node));
+	
+	new->ymax = cur->ymax;
+	new->ymin = (int)cur->ymid;
+	new->xmax = cur->branch[0]->xmax;
+	new->xmin = cur->branch[0]->xmin;
+	
+	new->p = cur;
+	
+	new->xmid = ((float)cur->branch[1]->xmax + (float)cur->branch[1]->xmin) / 2;
+	new->ymid = ((float)cur->branch[1]->ymax + (float)cur->branch[1]->ymin) / 2;
+	new = cur->branch[2] = (Node*)calloc(1, sizeof(Node));
+	
 	if(!new)
 		perror("Calloc error!(createNewChildren)");
-	new->ymax=(int)cur->ymid;
-	new->ymin=cur->ymin;
-	new->xmax=cur->xmax;
-	new->xmin=cur->branch[0]->xmax;
-	new->p=cur;
-	new->xmid=((float)cur->branch[2]->xmax+(float)cur->branch[2]->xmin)/2;
-	new->ymid=((float)cur->branch[2]->ymax+(float)cur->branch[2]->ymin)/2;
-	new=cur->branch[3]=(Node*)calloc(1,sizeof(Node));
+	
+	new->ymax = (int)cur->ymid;
+	new->ymin = cur->ymin;
+	new->xmax = cur->xmax;
+	new->xmin = cur->branch[0]->xmax;
+
+	new->p = cur;
+	
+	new->xmid = ((float)cur->branch[2]->xmax + (float)cur->branch[2]->xmin) / 2;
+	new->ymid = ((float)cur->branch[2]->ymax + (float)cur->branch[2]->ymin) / 2;
+	
+	new = cur->branch[3] = (Node*)calloc(1, sizeof(Node));
+
 	if(!new)
 		perror("Calloc error!(createNewChildren)");
-	new->ymax=cur->ymax;
-	new->ymin=(int)cur->ymid;
-	new->xmax=cur->xmax;
-	new->xmin=cur->branch[0]->xmax;
-	new->p=cur;
-	new->xmid=((float)cur->branch[3]->xmax+(float)cur->branch[3]->xmin)/2;
-	new->ymid=((float)cur->branch[3]->ymax+(float)cur->branch[3]->ymin)/2;
+		
+	new->ymax = cur->ymax;
+	new->ymin = (int)cur->ymid;
+	new->xmax = cur->xmax;
+	new->xmin = cur->branch[0]->xmax;
+	
+	new->p = cur;
+	
+	new->xmid = ((float)cur->branch[3]->xmax + (float)cur->branch[3]->xmin) / 2;
+	new->ymid = ((float)cur->branch[3]->ymax + (float)cur->branch[3]->ymin) / 2;
+
 	return 0;
 }
 
@@ -311,23 +365,25 @@ int createNewChildren(Node *cur)// создаёт 4 потомка у элеме
 int DepthMod(Node *cur)//увеличивает глубину дерева , cur - указатель на элемент с которого необходимо стартовать
 {
 	int rescomp;//результат сравнения веток родителя
-	while(cur!=NULL&&cur->p!=NULL)//пока не дошли до корня
+	
+	while(cur != NULL && cur->p != NULL)//пока не дошли до корня
 	{
-		rescomp=CompareBranches(cur,cur->p);//номер ветки(квадрата) в которой(м) находится cur
-		cur=cur->p;//переходим к родительскому элементу
-		cur->depth[rescomp]+=1;//увеличиваем значение глубины
+		rescomp = CompareBranches(cur, cur->p);//номер ветки(квадрата) в которой(м) находится cur
+		cur = cur->p;//переходим к родительскому элементу
+		cur->depth[rescomp] += 1;//увеличиваем значение глубины
 	}
+
 	return 0;
 }
 
 int CompareBranches(Node *cur,Node *parent)//выводит номер ветки parent в которой находится элемент cur
 {
-	int i;
-	for(i=0;i<4;++i)//сравниваем все ветки
+	for(int i = 0; i < 4; ++i)//сравниваем все ветки
 	{
-		if(parent->branch[i]==cur)//если совпадение => выводим результат
+		if(parent->branch[i] == cur)//если совпадение => выводим результат
 			return i;
 	}
+	
 	return 0;
 }
 
@@ -336,12 +392,13 @@ Info *Search(Node *root,Info *nw)//search nw in tree , if search is success - co
 {
 	Node *x,*leaf;//x указатель на найденный узел , leaf  -> указатель на родительский элемент
 	int i;
-	if((x=Find(root,nw,&leaf))!=NULL)// результат поиска
+
+	if((x = Find(root, nw, &leaf)) != NULL)// результат поиска
 	{
-		for(i=0;i<N;++i)//находим в узле указатель на информацию
+		for(i = 0; i < N; ++i)//находим в узле указатель на информацию
 		{
-			if ((x->info[i]!=NULL)&&(x->info[i]->x==nw->x)&&(x->info[i]->y==nw->y))
-				nw->str=strdup(x->info[i]->str);//копируем строку
+			if (x->info[i] != NULL && x->info[i]->x == nw->x && x->info[i]->y == nw->y)
+				nw->str = strdup(x->info[i]->str);//копируем строку
 		}
 		return nw;//возвращаем нказатель на искомый элемент
 	}else
@@ -352,41 +409,43 @@ Info *Search(Node *root,Info *nw)//search nw in tree , if search is success - co
 }
 
 
-Node *Find(Node *x,Info *t,Node **leaf)//поиск Node с элементом Info t(ключами) в узле
+Node *Find(Node *x, Info *t, Node **leaf)//поиск Node с элементом Info t(ключами) в узле
 {
-	int i;
-	while(x!=NULL)
+	while(x != NULL)
 	{
-		for(i=0;i<N;++i)
+		for(int i = 0; i < N; ++i)
 		{
-			if ((x->info[i]!=NULL)&&(x->info[i]->x==t->x)&&(x->info[i]->y==t->y))
-			return x;
+			if (x->info[i] != NULL && x->info[i]->x == t->x && x->info[i]->y == t->y)
+				return x;
 		}
-		*leaf=x;//сохраняем указатель на радительский элемент(необходимо для вставки)
-		x=ChooseBranch(x,t);//выбираем ветку
+
+		*leaf = x;//сохраняем указатель на радительский элемент(необходимо для вставки)
+		x = ChooseBranch(x,t);//выбираем ветку
 	}
 	return x;
 }
 
 
-int PrintRange(Node *x,Info * n1,Info * n2)//рекурсивный вывод элементов лежащих в диапазоне ключей от n1 до n2
+int PrintRange(Node *x, Info * n1, Info * n2)//рекурсивный вывод элементов лежащих в диапазоне ключей от n1 до n2
 {
 	if(x)
 	{
 		Info *now;
-		int i=0;
-		for(i=0;i<(x->occupancy);++i)//
+		int i = 0;
+		for(i = 0;i < x->occupancy; ++i)//
 		{
-			now=x->info[i];
-			if(((n1->x)<=(now->x))&&((n2->x)>=(now->x))&&((n1->y)<=(now->y))&&((n2->y)>=(now->y)))//если значение лежит в заданных границах n1 и n2
-				printf("x: %d;y: %d;info:%s\n",now->x,now->y,now->str);
+			now = x->info[i];
+			if(n1->x <= now->x && n2->x >= now->x && n1->y <= now->y && n2->y >= now->y)//если значение лежит в заданных границах n1 и n2
+				printf("x: %d;y: %d;info:%s\n", now->x, now->y, now->str);
 		}
-		PrintRange(x->branch[0],n1,n2);// просматриваем всё дерево
-		PrintRange(x->branch[1],n1,n2);
-		PrintRange(x->branch[2],n1,n2);
-		PrintRange(x->branch[3],n1,n2);
+
+		PrintRange(x->branch[0], n1, n2);// просматриваем всё дерево
+		PrintRange(x->branch[1], n1, n2);
+		PrintRange(x->branch[2], n1, n2);
+		PrintRange(x->branch[3], n1, n2);
 		return 1;
 	}
+	
 	return 0;
 }
 
@@ -465,6 +524,7 @@ void DelAllTree(Node *x)//удаление всего дерева
 		DelAllTree(x->branch[1]);
 		DelAllTree(x->branch[2]);
 		DelAllTree(x->branch[3]);
+		
 		for(i=0;i<x->occupancy;++i)
 		{
 			if(x->info[i]->str)
@@ -472,6 +532,7 @@ void DelAllTree(Node *x)//удаление всего дерева
 			if(x->info[i])
 				free(x->info[i]);
 		}
+
 		free(x);
 	}
 }
@@ -480,6 +541,7 @@ int delelement(Info *t,Tree * rt)//удаление элемента с ключ
 {
 	Node *x,*cur,*res;//
 	int i,j,n;
+
 	if((x=Find(rt->root,t,&cur))!=NULL)//поиск узла с удаляемым элементом
 	{
 		for(i=0;i<N;++i)//поиск удоляемого эл-та в узле

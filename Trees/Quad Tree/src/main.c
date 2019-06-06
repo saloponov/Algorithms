@@ -52,7 +52,7 @@ int		DebugPrint(Tree *);
 void 	PrintTree(Node* cur,int l);
 int 	addFromFile(Tree *rt, char *fileName);
 int 	OpenFile(Tree *rt);
-FILE *OpenFileProf(char s[100],FILE * f);
+FILE*	OpenFileProf(char s[100],FILE * f);
 int		RangePrintTree(Tree *);
 int 	PrintRange(Node*,Info*,Info*);
 int		Del(Tree*);
@@ -60,27 +60,44 @@ int 	outs(Tree*);
 int 	OrderMin(Node* cur,Data* data,int min);
 int 	DelElem(Tree *rt);
 int		TimingON(Tree *rt);
-long RandomLong(long vMIn, long vMax);
+long 	RandomLong(long vMIn, long vMax);
 unsigned long long rdtsc( void );
-int outsWithoutPrint(Tree *rt);
+int 	outsWithoutPrint(Tree *rt);
 
-int (*Func[])(Tree *)={0,DAdd,outs,DSearch,DebugPrint,RangePrintTree,OpenFile,Del,DelElem,TimingON};
+int (*Func[])(Tree *)=
+{
+	0,
+	DAdd,
+	outs,
+	DSearch,
+	DebugPrint,
+	RangePrintTree,
+	OpenFile,
+	Del,
+	DelElem,
+	TimingON
+};
 
 int Answer(char* alt[],int n )
 {
-	int answer=0,i;
+	int answer = 0,i;
+	char *prompt = "Choice";
+
 	printf("%s\n",DlgMsg[2]);
+
 	for(i=0;i<n;++i)
 		printf("%s \n",alt[i]);
-	char *prompt = "Choice";
+	
 	do
 	{
-		printf("%s\n",prompt);
-		prompt="You are wrong. Please repeat:";
-		scanf("%d",&answer);
-	}while ((answer<0) ||(answer>=n+1));
+		printf("%s\n", prompt);
+		prompt = "You are wrong. Please repeat:";
+		scanf("%d", &answer);
+	}while ((answer < 0) || (answer >= n+1));
+
 	return answer;
 }
+
 long RandomLong(long vMIn, long vMax)
 {
 	srand(time(NULL));
@@ -90,12 +107,13 @@ long RandomLong(long vMIn, long vMax)
 int main()
 {
 	Tree rt;//элемент с указателем на корень
-	rt.root=NULL;
+	rt.root = NULL;
 	int ind,err;
-	while((ind=Answer(Menu,num)))
+	
+	while((ind = Answer(Menu, num)))
 	{
-		err=Func[ind](&rt);
-		printf("%s\n",Errors[err]);
+		err = Func[ind](&rt);
+		printf("%s\n", Errors[err]);
 	}
 	printf("Good bye!\n");
 	return 0;
@@ -103,15 +121,15 @@ int main()
 
 void EnableTiming()
 {
-	if(!(time_file=fopen(file,"r+")))
+	if(!(time_file = fopen(file,"r+")))
 	{
-		fprintf(stderr,"can't open file %s\n",file);
-		if(!(time_file=fopen(file,"w+")))
+		fprintf(stderr,"can't open file %s\n", file);
+		if(!(time_file = fopen(file, "w+")))
 		{
 			perror("Can't create file!");
 			exit(1);
 		}
-		fprintf(stderr,"can't open file %s\n",file);
+		fprintf(stderr, "can't open file %s\n", file);
 	}
 }
 
@@ -119,7 +137,7 @@ unsigned long long rdtsc( void )
 {
 
 	   unsigned long long int x;
-	   x=clock();
+	   x = clock();
 	   //asm volatile ( "rdtsc" : "=A" (x) );
 	   return x;
 }
@@ -127,28 +145,31 @@ unsigned long long rdtsc( void )
 
 int TimingON(Tree *rt)
 {
-	FILE *in,*logAdd,*logFind,*logDel;
-	const int SHIFT=10000,MAX=5000000,REPEAT=10;
+	FILE *in, *logAdd, *logFind, *logDel;
+	const int 	SHIFT=10000,
+				MAX=5000000,
+				REPEAT=10;
 	int currentAttemptNumber;
-	int i,j,res=0;
-	unsigned long long TimeAddUp,TimeFind,TimeOrderPrint;
+	int i, j, res=0;
+	unsigned long long TimeAddUp, TimeFind, TimeOrderPrint;
 	char buf[200];
-	long seconds,TimeAddAllusec,TimeAddAllms,TimeDel;
+	long seconds, TimeAddAllusec, TimeAddAllms, TimeDel;
 	//открытие лог файлов
-	logAdd=OpenFileProf("timing/time_add.csv",logAdd);
-	logFind=OpenFileProf("timing/time_search_and_del.csv",logFind);
-	logDel=OpenFileProf("timing/time_del.csv",logDel);
-	sprintf(buf,"data.txt");
-	printf("%s\n",buf);
-	in=fopen(buf,"r");
-	fprintf(time_file,"numbers of elements; add time;\n");
+	logAdd = OpenFileProf("timing/time_add.csv", logAdd);
+	logFind = OpenFileProf("timing/time_search_and_del.csv", logFind);
+	logDel = OpenFileProf("timing/time_del.csv", logDel);
+	sprintf(buf, "data.txt");
+	printf("%s\n", buf);
+	in=fopen(buf, "r");
+	fprintf(time_file, "numbers of elements; add time;\n");
 //	fprintf(time_file,"%d;",j+1);
 	srand(time(NULL));
 
-	struct itimerval value1={{0,0},{1000,0}},value2;
-	setitimer(ITIMER_PROF,&value1,NULL);
+	struct itimerval value1={{0,0},{1000,0}}, value2;
+	setitimer(ITIMER_PROF, &value1, NULL);
 
-	for(currentAttemptNumber=1;currentAttemptNumber<REPEAT;++currentAttemptNumber)//Выполнить цикл столько раз, сколь попыток профилирования (таймирования) на сделать
+	//Выполнить цикл столько раз, сколь попыток профилирования (таймирования) на сделать
+	for(currentAttemptNumber = 1; currentAttemptNumber < REPEAT; ++currentAttemptNumber)
 	{
 		rewind(in);
 		printf("Opened. Adding items:\n"); //Вывести сообщение о том, что все файлы открыты, начинается добавление элементов
@@ -157,46 +178,58 @@ int TimingON(Tree *rt)
 		//t_time[0]=rdtsc();//Зачесь время начала добавления части
 		int t,k;
 		Info **RealKeys=NULL;
-		RealKeys=(Info**)realloc(RealKeys,MAX*sizeof(Info*));
-		for(t=0;t<MAX;++t)//считываем в память базу с ключами и строками
+		RealKeys=(Info**)realloc(RealKeys, MAX*sizeof(Info*));
+
+		for(t = 0; t < MAX; ++t)//считываем в память базу с ключами и строками
 		{
-			RealKeys[t]=(Info*)malloc(sizeof(Info));
+			RealKeys[t] = (Info*)malloc(sizeof(Info));
 			fscanf(in, "%d %d", &(RealKeys[t]->x), &(RealKeys[t]->y));
-			fscanf(in,"%*[^\n]");
+			fscanf(in, "%*[^\n]");
 			fscanf(in, "%*[\n]");
-			RealKeys[t]->str=enterString(in); //Вводим из файла с данными строку
+			RealKeys[t]->str = enterString(in); //Вводим из файла с данными строку
 			//printf("(%d,%d)\n",RealKeys[t]->x,RealKeys[t]->y);
 		}
-		for(res=10000,k=0;res<MAX;res+=10000,++k)
+
+		for(res = 10000, k = 0; res < MAX; res += 10000, ++k)
 		{
-			int res2=res+SHIFT;
-			printf("%d\n",res);
-			setitimer(ITIMER_PROF,&value1,NULL);
-			for(t=res-10000;t<res;++t)
+			int res2 = res + SHIFT;
+			printf("%d\n", res);
+			setitimer(ITIMER_PROF, &value1, NULL);
+			
+			for(t = res - 10000; t < res; ++t)
 			{
 				AddNode(rt, RealKeys[t]); //Пытаемся добавить элем
 			}
-			getitimer(ITIMER_PROF,&value2);
-			TimeAddAllusec=999999-value2.it_value.tv_usec;//value1.it_value.tv_usec-value2.it_value.tv_usec;
+			
+			getitimer(ITIMER_PROF, &value2);
+			TimeAddAllusec = 999999 - value2.it_value.tv_usec;//value1.it_value.tv_usec-value2.it_value.tv_usec;
 			//TimeAddAll+=rdtsc()-t_time[0];
-			if((TimeAddAllms=value1.it_value.tv_sec-value2.it_value.tv_sec)>1)
+			
+			if((TimeAddAllms = value1.it_value.tv_sec - value2.it_value.tv_sec) > 1)
 							TimeAddAllusec=TimeAddAllusec+(TimeAddAllms-1)*1000000;
+
 			//TimeAddAllms=999999-value2.it_value.tv_sec;
 			//if(value1.it_value)
-			fprintf(logAdd, "%d;%d;%ld;",currentAttemptNumber,res,TimeAddAllusec); //Дописываем в журнал добавления время, за которое добавили эту часть элементов
+
+			//Дописываем в журнал добавления время, за которое добавили эту часть элементов
+			fprintf(logAdd, "%d;%d;%ld;", currentAttemptNumber, res, TimeAddAllusec); 
 			fflush(logAdd);
-			if(res<=30000)
+			
+			if(res <= 30000)
 			{
-				setitimer(ITIMER_PROF,&value1,NULL);
+				setitimer(ITIMER_PROF, &value1, NULL);
 				outsWithoutPrint(rt);
-				getitimer(ITIMER_PROF,&value2);
-				TimeAddAllusec+=999999-value2.it_value.tv_usec;
-				TimeAddAllms=value1.it_value.tv_sec-value2.it_value.tv_sec;
-				TimeAddAllusec=TimeAddAllusec+(TimeAddAllms-1)*1000000;
-				fprintf(logAdd,"%ld;\n",TimeAddAllusec);
+				getitimer(ITIMER_PROF, &value2);
+				TimeAddAllusec += 999999 - value2.it_value.tv_usec;
+				TimeAddAllms = value1.it_value.tv_sec - value2.it_value.tv_sec;
+				TimeAddAllusec = TimeAddAllusec + (TimeAddAllms - 1) * 1000000;
+				fprintf(logAdd, "%ld;\n", TimeAddAllusec);
 				fflush(logAdd);
 			}else
-				fprintf(logAdd,"\n");
+			{
+				fprintf(logAdd, "\n");
+			}
+				
 			TimeFind=0;
 			setitimer(ITIMER_PROF,&value1,NULL);
 			for(j=0;j<(SHIFT);++j) //таймирование неудачного поиска 10000 элементов
