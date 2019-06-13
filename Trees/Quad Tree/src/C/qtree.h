@@ -28,7 +28,7 @@ typedef struct Info{//структура с информацией находя�
 	char *str;
 }Info;
 
-typedef struct Data{//структура вавода
+typedef struct Data{//структура ввода
 	int x;
 	int y;
 	char *string;
