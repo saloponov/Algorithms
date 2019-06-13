@@ -1,7 +1,8 @@
-''' Quad tree (q-tree) implementation'''
+# Quad tree (q-tree) implementation
 
+Folders 
 src - source code
 timing - results of profiling
 example of tree - text file with loaded values
-References - paper or examples of code helps to understand quad trees
+References - research articles and examples of code helps to understand quad trees and multidimensional trees.
 
