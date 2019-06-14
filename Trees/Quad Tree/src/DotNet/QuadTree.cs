@@ -21,11 +21,12 @@ namespace QuadTree
 			if (Root == null)
 			{
 				Root = new Node<T>(key, value);
+				return;
 			}
 
 			var node = Root;
 
-			if (node.FindNode(key).Current != default(Node<T>)) // key not found
+			if (node.FindNode(key).Current == default(Node<T>)) // key not found
 			{
 				Root.Insert(key, value);
 			}
@@ -130,9 +131,9 @@ namespace QuadTree
 				value = value
 			};
 
-			if (!(node.min.X >= key.X && node.max.X <= key.X &&
-				 node.min.Y >= key.Y && node.max.Y <= key.Y &&
-				 node.min.Z >= key.Z && node.max.Z <= key.Z))
+			if (!(node.min.X <= key.X && node.max.X >= key.X &&
+				 node.min.Y <= key.Y && node.max.Y >= key.Y &&
+				 node.min.Z <= key.Z && node.max.Z >= key.Z))
 				throw new Exception("Incorrect key");
 
 			return node;
