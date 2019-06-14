@@ -5,8 +5,6 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Transactions;
 
 
 namespace QuadTree
@@ -20,13 +18,17 @@ namespace QuadTree
 
 		public void Insert(Vector3 key, T value)
 		{
-			//if (EqualityComparer<T>.Default.Equals(Root.value, default(T)))
 			if (Root == null)
 			{
 				Root = new Node<T>(key, value);
 			}
 
 			var node = Root;
+
+			if (node.FindNode(key).Current != default(Node<T>)) // key not found
+			{
+				Root.Insert(key, value);
+			}
 			/*while (!node.childs.All(x => x == default(Node<T>)))
 			{
 				if ( key.X < )
@@ -75,14 +77,10 @@ namespace QuadTree
 		#endregion
 
 		#region Constructors
-		/*public Node()
+		public Node()
 		{
-			max = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-			min = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-
-			InitRootNode();
-			value = default(T);
-		}*/
+			InitNullChilds();
+		}
 
 		public Node(Vector3 max, Vector3 min)
 		{
@@ -119,10 +117,25 @@ namespace QuadTree
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void InitNewNode(Node<T> parent)
+		private Node<T> InitNewNode(Node<T> parent, Vector3 max, Vector3 min, Vector3 key, T value)
 		{
-			InitNullChilds();
-			this.parent = parent;
+
+			Node<T> node = new Node<T>()
+			{
+				childs = InitNullChilds(),
+				parent = parent,
+				max = max,
+				min = min,
+				key = key,
+				value = value
+			};
+
+			if (!(node.min.X >= key.X && node.max.X <= key.X &&
+				 node.min.Y >= key.Y && node.max.Y <= key.Y &&
+				 node.min.Z >= key.Z && node.max.Z <= key.Z))
+				throw new Exception("Incorrect key");
+
+			return node;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,7 +145,34 @@ namespace QuadTree
 			default(Node<T>), default(Node<T>), default(Node<T>), default(Node<T>)
 		};
 		
-		public static Node<T> ChooseBranchNode(Node<T> current, Vector3 key)
+		public Node<T> Insert(Vector3 key, T value)
+		{
+
+			var tupleNodes = ChooseBranchNode(key); 
+
+			while (tupleNodes.Current != default(Node<T>))
+			{
+				tupleNodes = ChooseBranchNode(key);
+			}
+
+			if(tupleNodes.Current == default(Node<T>))
+			{
+				Node<T> node = InitNewNode(tupleNodes.Parent, 
+											tupleNodes.Max,
+											tupleNodes.Min,
+											key,
+											value);
+
+
+				tupleNodes.Parent.childs[tupleNodes.Quarter] = node;
+				
+				return node;
+			}
+
+			return default(Node<T>);
+		}
+
+		public Node<T> ChooseBranchNode(Node<T> current, Vector3 key)
 		{
 			if (current.middle.X <= key.X)
 			{
@@ -170,23 +210,35 @@ namespace QuadTree
 			}
 		}
 
-		private Node<T> ChooseBranchNode(Vector3 key)
+		private (Node<T> Current,Node<T> Parent, Vector3 Max, Vector3 Min, int Quarter) ChooseBranchNode(Vector3 key)
 		{
 			if (middle.X <= key.X)
 			{
 				if (middle.Y <= key.Y)
 				{
 					if (middle.Z <= key.Z)
-						return childs[0];
+						return (childs[0], this, 
+							new Vector3(max.X, max.Y, max.Z), 
+							new Vector3(middle.X, middle.Y, middle.Z),
+							0);
 					else
-						return childs[1];
+						return (childs[1], this, 
+							new Vector3(max.X, max.Y, middle.Z),
+							new Vector3(middle.X, middle.Y, min.Z),
+							1);
 				}
 				else
 				{
 					if (middle.Z <= key.Z)
-						return childs[2];
+						return (childs[2], this,
+							new Vector3(max.X, middle.Y, max.Z),
+							new Vector3(middle.X, min.Y, middle.Z),
+							2);
 					else
-						return childs[3];
+						return (childs[3], this, 
+							new Vector3(max.X, middle.Y, middle.Z),
+							new Vector3(middle.X, min.Y, min.Z),
+							3);
 				}
 			}
 			else   // if (middle.X > key.X)
@@ -194,21 +246,33 @@ namespace QuadTree
 				if (middle.Y <= key.Y)
 				{
 					if (middle.Z <= key.Z)
-						return childs[4];
+						return (childs[4], this,
+							new Vector3(middle.X, max.Y, max.Z),
+							new Vector3(min.X, middle.Y, middle.Z),
+							4);
 					else
-						return childs[5];
+						return (childs[5], this, 
+							new Vector3(middle.X, max.Y, middle.Z),
+							new Vector3(min.X, middle.Y, min.Z),
+							5);
 				}
 				else
 				{
 					if (middle.Z <= key.Z)
-						return childs[6];
+						return (childs[6], this, 
+							new Vector3(middle.X, middle.Y, max.Z),
+							new Vector3(min.X, min.Y, middle.Z),
+							6);
 					else
-						return childs[7];
+						return (childs[7], this,
+							new Vector3(middle.X, middle.Y, middle.Z),
+							new Vector3(min.X, min.Y, min.Z),
+							7);
 				}
 			}
 		}
 
-		public (Node<T>, Node<T>) FindNode(Vector3 key)
+		public (Node<T> Current, Node<T> Parent) FindNode(Vector3 key)
 		{
 			var current = this;
 			Node<T> parent = default(Node<T>);
@@ -216,13 +280,13 @@ namespace QuadTree
 			while (current != default(Node<T>))
 			{
 				if (current.key == key)
-					return (parent, current);
+					return (current, parent);
 
 				parent = current;
-				current = ChooseBranchNode(key);
+				current = ChooseBranchNode(key).Current;
 			}
 
-			return (parent, current);
+			return (current, parent);
 		}
 
 		public static Node<T> FindNode(Node<T> current, Vector3 key)
