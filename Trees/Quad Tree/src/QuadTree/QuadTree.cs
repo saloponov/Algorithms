@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.IO.Enumeration;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
 using System.Runtime.CompilerServices;
 
 
@@ -16,12 +12,12 @@ namespace QuadTree
 		public QuadTree() => Root = null;
 		public QuadTree(Vector3 max, Vector3 min, Vector3 key, T value) => Root = new Node<T>(max, min, key, value);
 
-		public void Insert(Vector3 key, T value)
+		public QuadTree<T> Insert(Vector3 key, T value)
 		{
 			if (Root == null)
 			{
 				Root = new Node<T>(key, value);
-				return;
+				return this;
 			}
 
 			var node = Root;
@@ -41,6 +37,7 @@ namespace QuadTree
 				
 				
 			}*/
+			return this;
 		}
 
 		
