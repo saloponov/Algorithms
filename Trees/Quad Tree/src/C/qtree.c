@@ -158,7 +158,7 @@ int Expansion(Node * cur, Node *new, int branch, int xmax, int xmin, int ymax, i
 	return 0;
 }
 
-int max(int *d)//поиск максимального в массиве из 4x элементов
+/*int max(int *d)//поиск максимального в массиве из 4x элементов
 {
 	if (d != null)
 		return -INT_MIN;
@@ -170,7 +170,7 @@ int max(int *d)//поиск максимального в массиве из 4x
 	}
 
 	return c;
-}
+}*/
 
 int PointBelongsToSquare(int xmax, int xmin, int ymax, int ymin, int xpnt, int ypnt)//проверка принадлежности точки xpnt ypnt площади заключённой в точках xmax ymax xmin ymin
 {

@@ -1,0 +1,14 @@
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\xunit.runner.reporters.netcoreapp10.dll
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\xunit.runner.utility.netcoreapp10.dll
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\QuadTreeTests.deps.json
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\QuadTreeTests.runtimeconfig.json
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\QuadTreeTests.runtimeconfig.dev.json
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\QuadTreeTests.dll
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\bin\Debug\netcoreapp2.1\QuadTreeTests.pdb
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\obj\Debug\netcoreapp2.1\QuadTreeTests.csprojAssemblyReference.cache
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\obj\Debug\netcoreapp2.1\QuadTreeTests.csproj.CoreCompileInputs.cache
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\obj\Debug\netcoreapp2.1\QuadTreeTests.AssemblyInfoInputs.cache
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\obj\Debug\netcoreapp2.1\QuadTreeTests.AssemblyInfo.cs
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\obj\Debug\netcoreapp2.1\QuadTreeTests.dll
+C:\repos\Algorithms\Trees\Quad Tree\src\QuadTreeTests\obj\Debug\netcoreapp2.1\QuadTreeTests.pdb

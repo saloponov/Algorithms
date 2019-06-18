@@ -46,7 +46,7 @@ unsigned long long t_time[4];
 
 int 	DAdd(Tree * );
 int 	Answer(char *Menu[],int);
-char	*enterString(FILE *stream);
+char*	enterString(FILE *stream);
 int 	DSearch(Tree *);
 int		DebugPrint(Tree *);
 void 	PrintTree(Node* cur,int l);
