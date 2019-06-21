@@ -61,8 +61,8 @@ dkms.conf
 # Visual Studio
 .vs/*
 
-Trees/Quad Tree/src/QuadTree/bin/
-Trees/Quad Tree/src/QuadTree/obj/
+**/Trees/Quad Tree/src/QuadTree/bin/
+**/Trees/Quad Tree/src/QuadTree/obj/
 
-Trees/Quad Tree/src/QuadTreeTests/bin/
-Trees/Quad Tree/src/QuadTreeTests/obj/
+**/Trees/Quad Tree/src/QuadTreeTests/bin/
+**/Trees/Quad Tree/src/QuadTreeTests/obj/
