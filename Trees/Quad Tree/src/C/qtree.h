@@ -28,7 +28,7 @@ typedef struct Info{//структура с информацией находя�
 	char *str;
 }Info;
 
-typedef struct Data{//структура вавода
+typedef struct Data{//структура ввода
 	int x;
 	int y;
 	char *string;
@@ -64,7 +64,7 @@ int		DelEmptyLeaves(Node *parent);//если потомки узла parent пу
 int 	delelement(Info *t,Tree * rt);//удаление элемента Info *t в Дереве
 void 	DelAllTree(Node*);//очистка всего дерева
 int 	createNewChildren(Node *cur);//создание 4x новых потомков
-int 	max(int *);//поиск максимального в массиве int
+//int 	max(int *);//поиск максимального в массиве int
 int 	CompareBranches(Node *cur,Node *parent);//возвращает номер ветки в parent в которой находится cur какой
 int		DeepestElement(Node *cur,int i,Node **,int *);
 void 	depthDown(Node *cur);//изменяет значения высоты(глубины) дерева при изменинии высоты (глубины)

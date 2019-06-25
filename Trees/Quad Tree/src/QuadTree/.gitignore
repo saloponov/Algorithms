@@ -1,0 +1,36 @@
+# User-specific files
+
+*.suo
+
+*.user
+*.sln.docstates
+*.csproj.DotSettings
+
+
+.vs/
+
+# Build results
+
+debug/
+release/
+bin/
+obj/
+*.Bin/
+
+
+*.vspscc
+
+*.vssscc
+*.cache
+*.log
+*.publishproj
+
+
+*.dll
+
+*.pdb
+
+# NuGet
+!packages.config
+!repositories.config
+/packages/*
