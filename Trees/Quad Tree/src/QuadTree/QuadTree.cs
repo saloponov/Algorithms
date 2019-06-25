@@ -203,7 +203,7 @@ namespace QuadTree
 											key,
 											value);
 
-				//
+				
 				tupleNodes.Parent.children[tupleNodes.Quarter] = node;
 				
 				return node;
