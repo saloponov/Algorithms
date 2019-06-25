@@ -28,12 +28,12 @@ namespace QuadTree
 			{
 				Root.Insert(key, value);
 			}
-			/*while (!node.childs.All(x => x == default(Node<T>)))
+			/*while (!node.children.All(x => x == default(Node<T>)))
 			{
 				if ( key.X < )
 			}
 
-			else if (Root.childs.All(x => x == default(Node<T>))) //it is leaf
+			else if (Root.children.All(x => x == default(Node<T>))) //it is leaf
 			{
 				var currentNode = Root;
 				
@@ -55,7 +55,7 @@ namespace QuadTree
 			Stack<(Node<T>, int)> parents = new Stack<(Node<T>, int)>();
 			Node<T> pointer = Root;
 			int deepth = 0,
-				childIndex;
+				pointerChildrensIndex = 0;
 			StringBuilder result = new StringBuilder();
 
 			while (pointer != default(Node<T>))
@@ -67,24 +67,26 @@ namespace QuadTree
 
 				result.Append(pointer.key + " " + pointer.value.ToString());
 
-				if (!pointer.childs.Any(x => x != default(Node<T>)))
+				if (pointer.children.Any(x => x != default(Node<T>)) == true)
 				{
-					(pointer, childIndex) = parents.Pop();
-				}
-
-				for (childIndex = 0; childIndex < pointer.childs.Length; ++childIndex)
-				{
-					if (pointer.childs[childIndex] != default(Node<T>))
+					for (int i = pointerChildrensIndex; i < pointer.children.Length; ++i)
 					{
-						parents.Push((pointer, childIndex + 1));
-						pointer = pointer.childs[childIndex++];
-						++deepth;
-						break;
+						if (pointer.children[i] != default(Node<T>))
+						{
+							parents.Push((pointer, i + 1));
+							pointer = pointer.children[i];
+							++deepth;
+							pointerChildrensIndex = 0;
+							break;
+						}
 					}
+					if (deepth == 0)
+						break;
+				}else
+				{
+					(pointer, pointerChildrensIndex) = parents.Pop();
+					--deepth;
 				}
-
-				if (Root == pointer)
-					break;
 
 				result.Append("\r\n");
 				
@@ -111,14 +113,14 @@ namespace QuadTree
 			set;
 		}
 
-		public Node<T>[] childs;
+		public Node<T>[] children;
 		public Node<T> parent;
 		#endregion
 
 		#region Constructors
 		public Node()
 		{
-			InitNullChilds();
+			InitNullChildren();
 		}
 
 		public Node(Vector3 max, Vector3 min)
@@ -151,7 +153,7 @@ namespace QuadTree
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void InitRootNode()
 		{
-			InitNullChilds();
+			children = InitNullChildren();
 			parent = default(Node<T>);
 		}
 
@@ -161,7 +163,7 @@ namespace QuadTree
 
 			Node<T> node = new Node<T>()
 			{
-				childs = InitNullChilds(),
+				children = InitNullChildren(),
 				parent = parent,
 				max = max,
 				min = min,
@@ -177,8 +179,7 @@ namespace QuadTree
 			return node;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Node<T>[] InitNullChilds() => childs = new Node<T>[8]
+		private Node<T>[] InitNullChildren() => new Node<T>[8]
 		{
 			default(Node<T>), default(Node<T>), default(Node<T>), default(Node<T>),
 			default(Node<T>), default(Node<T>), default(Node<T>), default(Node<T>)
@@ -202,8 +203,8 @@ namespace QuadTree
 											key,
 											value);
 
-
-				tupleNodes.Parent.childs[tupleNodes.Quarter] = node;
+				//
+				tupleNodes.Parent.children[tupleNodes.Quarter] = node;
 				
 				return node;
 			}
@@ -218,16 +219,16 @@ namespace QuadTree
 				if (current.middle.Y <= key.Y)
 				{
 					if (current.middle.Z <= key.Z)
-						return current.childs[0];
+						return current.children[0];
 					else
-						return current.childs[1];
+						return current.children[1];
 				}
 				else
 				{
 					if (current.middle.Z <= key.Z)
-						return current.childs[2];
+						return current.children[2];
 					else
-						return current.childs[3];
+						return current.children[3];
 				}
 			}
 			else   // if (current.middle.X > key.X)
@@ -235,16 +236,16 @@ namespace QuadTree
 				if (current.middle.Y <= key.Y)
 				{
 					if (current.middle.Z <= key.Z)
-						return current.childs[4];
+						return current.children[4];
 					else
-						return current.childs[5];
+						return current.children[5];
 				}
 				else
 				{
 					if (current.middle.Z <= key.Z)
-						return current.childs[6];
+						return current.children[6];
 					else
-						return current.childs[7];
+						return current.children[7];
 				}
 			}
 		}
@@ -256,12 +257,12 @@ namespace QuadTree
 				if (middle.Y <= key.Y)
 				{
 					if (middle.Z <= key.Z)
-						return (childs[0], this, 
+						return (children[0], this, 
 							new Vector3(max.X, max.Y, max.Z), 
 							new Vector3(middle.X, middle.Y, middle.Z),
 							0);
 					else
-						return (childs[1], this, 
+						return (children[1], this, 
 							new Vector3(max.X, max.Y, middle.Z),
 							new Vector3(middle.X, middle.Y, min.Z),
 							1);
@@ -269,12 +270,12 @@ namespace QuadTree
 				else
 				{
 					if (middle.Z <= key.Z)
-						return (childs[2], this,
+						return (children[2], this,
 							new Vector3(max.X, middle.Y, max.Z),
 							new Vector3(middle.X, min.Y, middle.Z),
 							2);
 					else
-						return (childs[3], this, 
+						return (children[3], this, 
 							new Vector3(max.X, middle.Y, middle.Z),
 							new Vector3(middle.X, min.Y, min.Z),
 							3);
@@ -285,12 +286,12 @@ namespace QuadTree
 				if (middle.Y <= key.Y)
 				{
 					if (middle.Z <= key.Z)
-						return (childs[4], this,
+						return (children[4], this,
 							new Vector3(middle.X, max.Y, max.Z),
 							new Vector3(min.X, middle.Y, middle.Z),
 							4);
 					else
-						return (childs[5], this, 
+						return (children[5], this, 
 							new Vector3(middle.X, max.Y, middle.Z),
 							new Vector3(min.X, middle.Y, min.Z),
 							5);
@@ -298,12 +299,12 @@ namespace QuadTree
 				else
 				{
 					if (middle.Z <= key.Z)
-						return (childs[6], this, 
+						return (children[6], this, 
 							new Vector3(middle.X, middle.Y, max.Z),
 							new Vector3(min.X, min.Y, middle.Z),
 							6);
 					else
-						return (childs[7], this,
+						return (children[7], this,
 							new Vector3(middle.X, middle.Y, middle.Z),
 							new Vector3(min.X, min.Y, min.Z),
 							7);
