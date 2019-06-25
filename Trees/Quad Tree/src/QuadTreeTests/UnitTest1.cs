@@ -7,6 +7,12 @@ namespace QuadTreeTests
 {
     public class UnitTest1
     {
+		[Fact]
+		public void CreateSimpleTree()
+		{
+			
+		}
+
         [Fact]
         public void CreateOnlyRootNode()
         {

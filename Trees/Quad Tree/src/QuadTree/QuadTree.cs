@@ -1,7 +1,9 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
 namespace QuadTree
 {
@@ -50,7 +52,46 @@ namespace QuadTree
 
 		public override string ToString()
 		{
-			return Root.key + " " + Root.value.ToString();
+			Stack<(Node<T>, int)> parents = new Stack<(Node<T>, int)>();
+			Node<T> pointer = Root;
+			int deepth = 0,
+				childIndex;
+			StringBuilder result = new StringBuilder();
+
+			while (pointer != default(Node<T>))
+			{
+				int tab = deepth;
+
+				while (--tab >= 0)
+					result.Append(".");
+
+				result.Append(pointer.key + " " + pointer.value.ToString());
+
+				if (!pointer.childs.Any(x => x != default(Node<T>)))
+				{
+					(pointer, childIndex) = parents.Pop();
+				}
+
+				for (childIndex = 0; childIndex < pointer.childs.Length; ++childIndex)
+				{
+					if (pointer.childs[childIndex] != default(Node<T>))
+					{
+						parents.Push((pointer, childIndex + 1));
+						pointer = pointer.childs[childIndex++];
+						++deepth;
+						break;
+					}
+				}
+
+				if (Root == pointer)
+					break;
+
+				result.Append("\r\n");
+				
+			}
+
+
+			return result.ToString();
 		}
 	}
 
